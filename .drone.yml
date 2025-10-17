@@ -4,7 +4,7 @@ name: default
 
 steps:
   - name: build
-    image: peaceiris/hugo:v0.55.6
+    image: peaceiris/hugo:v0.65.3-mod
     commands:
       - hugo --gc --minify   # génère ./public
 
