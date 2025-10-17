@@ -1,3 +1,6 @@
+hugo_env: &hugo_env
+  BASE_URL: http://bucket-drone.s3-website-us-east-1.amazonaws.com
+
 kind: pipeline
 type: docker
 name: default
@@ -6,7 +9,7 @@ steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
     commands:i
-      - hugo --gc --minifyi --baseURL 'http://bucket-drone.s3-website-us-east-1.amazonaws.com/'   # génère ./public
+      - hugo --gc --minifyi --baseURL $BASE_URL   # génère ./public
 
   - name: upload-to-s3
     image: amazon/aws-cli:2.13.7
