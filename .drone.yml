@@ -5,8 +5,8 @@ name: default
 steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
-    commands:
-      - hugo --gc --minifyi --baseURL http://bucket-drone.s3-website-us-east-1.amazonaws.com/   # génère ./public
+    commands:i
+      - hugo --gc --minifyi --baseURL 'http://bucket-drone.s3-website-us-east-1.amazonaws.com/'   # génère ./public
 
   - name: upload-to-s3
     image: amazon/aws-cli:2.13.7
