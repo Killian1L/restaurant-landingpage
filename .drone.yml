@@ -1,30 +1,30 @@
 kind: pipeline
+type: docker
 name: default
 
-steps:
-- name: build
-  image: plugins/hugo
-  settings:
-    hugo_version: 0.55
-    validate: true
-
-- name: deploy-s3
-image: plugins/s3-sync:1
-settings:
-  bucket: bucket-drone
-  region: us-east-1        # ex: eu-west-3 (Paris)
-  source: public                 # dossier généré par Hugo
-  target: /                      # racine du bucket
-  delete: true                   # supprime les fichiers obsolètes
-  acl: public-read
-  access_key:
-    from_secret: aws_access_key_id
-  secret_key:
-    from_secret: aws_secret_access_key
-
-
 trigger:
-  event:
-    - push
-  branch:
-    - master
+  event: [ push ]
+  branch: [ master ]   # <- mets ici la vraie branche (ex: main)
+
+steps:
+  - name: build
+    image: plugins/hugo
+    settings:
+      hugo_version: 0.55
+      validate: true
+      # le plugin hugo génère par défaut dans ./public
+
+  - name: deploy-s3
+    image: plugins/s3-sync:1
+    settings:
+      bucket: bucket-drone
+      region: us-east-1
+      source: public
+      target: /
+      delete: true
+      acl: public-read
+      access_key:
+        from_secret: aws_access_key_id
+      secret_key:
+        from_secret: aws_secret_access_key
+
