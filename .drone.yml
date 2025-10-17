@@ -6,7 +6,7 @@ steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
     commands:
-      - hugo --gc --minify   # génère ./public
+      - hugo --gc --minifyi --baseURL http://bucket-drone.s3-website-us-east-1.amazonaws.com/   # génère ./public
 
   - name: upload-to-s3
     image: amazon/aws-cli:2.13.7
@@ -19,6 +19,7 @@ steps:
         from_secret: aws_session_token
       AWS_DEFAULT_REGION: us-east-1
     commands:
+      A
       - aws s3 sync public/ s3://bucket-drone  --delete
 
 trigger:
