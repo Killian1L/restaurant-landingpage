@@ -22,7 +22,6 @@ steps:
         from_secret: aws_session_token
       AWS_DEFAULT_REGION: us-east-1
     commands:
-      A
       - aws s3 sync public/ s3://bucket-drone  --delete
 
 trigger:
