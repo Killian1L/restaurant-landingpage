@@ -1,6 +1,3 @@
-hugo_env: &hugo_env
-  BASE_URL: http://bucket-drone.s3-website-us-east-1.amazonaws.com
-
 kind: pipeline
 type: docker
 name: default
@@ -8,28 +5,38 @@ name: default
 steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
-    environment:
-      <<: *hugo_env
     commands:
-      - hugo --gc --baseURL $BASE_URL   # génère ./public
+      - hugo --gc --minify   # génère ./public
 
-  - name: upload-to-s3
-    image: amazon/aws-cli:2.13.7
-    environment:
-      AWS_ACCESS_KEY_ID:
+  - name: deploy-s3
+    image: plugins/s3-sync:1
+    settings:
+      bucket: bucket-drone-release
+      region: us-east-1
+      source: public
+      target: /
+      delete: true
+      acl: public-read
+      access_key:
         from_secret: aws_access_key_id
-      AWS_SECRET_ACCESS_KEY:
+      secret_key:
         from_secret: aws_secret_access_key
-      AWS_SESSION_TOKEN:
-        from_secret: aws_session_token
-      AWS_DEFAULT_REGION: us-east-1
-    commands:
-      - aws s3 sync public/ s3://bucket-drone  --delete
+    when:
+      # Déploie si tag = "release" OU si promote target = "release"
+      # 1) Tag:
+      event:
+        include: [ tag, promote ]
+      ref:
+        include: [ refs/tags/release ]   # ne s'applique qu'au cas event=tag
+      target:
+        include: [ release ]              # ne s'applique qu'au cas event=promote
 
 trigger:
   branch:
     - master
   event:
     - push
-    - custom
+    - tag
+    - promote
+    - custom   # (utile si tu déclenches un build via l'API)
 
