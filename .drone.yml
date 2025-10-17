@@ -8,6 +8,8 @@ name: default
 steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
+    environment:
+      <<: *hugo_env
     commands:
       - hugo --gc --baseURL $BASE_URL   # génère ./public
 
