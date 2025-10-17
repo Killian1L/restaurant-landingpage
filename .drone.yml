@@ -9,7 +9,7 @@ steps:
   - name: build
     image: peaceiris/hugo:v0.65.3-mod
     commands:
-      - hugo --gc --minifyi --baseURL $BASE_URL   # génère ./public
+      - hugo --gc --baseURL $BASE_URL   # génère ./public
 
   - name: upload-to-s3
     image: amazon/aws-cli:2.13.7
