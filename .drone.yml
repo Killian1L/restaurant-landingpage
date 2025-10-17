@@ -1,6 +1,10 @@
 hugo_env: &hugo_env
   BASE_URL: http://bucket-drone.s3-website-us-east-1.amazonaws.com
 
+hugo_env_release: &hugo_env_release
+  BASE_URL: http://bucket-drone-release.s3-website-us-east-1.amazonaws.com
+
+---
 kind: pipeline
 type: docker
 name: default
@@ -24,7 +28,7 @@ steps:
         from_secret: aws_session_token
       AWS_DEFAULT_REGION: us-east-1
     commands:
-      - aws s3 sync public/ s3://bucket-drone  --delete
+      - aws s3 sync public/ s3://bucket-drone --delete
 
 trigger:
   branch:
@@ -32,4 +36,36 @@ trigger:
   event:
     - push
     - custom
+
+---
+kind: pipeline
+type: docker
+name: release
+
+steps:
+  - name: build
+    image: peaceiris/hugo:v0.65.3-mod
+    environment:
+      <<: *hugo_env_release
+    commands:
+      - hugo --gc --baseURL $BASE_URL   # génère ./public
+
+  - name: upload-to-s3
+    image: amazon/aws-cli:2.13.7
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: aws_secret_access_key
+      AWS_SESSION_TOKEN:
+        from_secret: aws_session_token
+      AWS_DEFAULT_REGION: us-east-1
+    commands:
+      - aws s3 sync public/ s3://bucket-drone-release --delete
+
+trigger:
+  event:
+    - promote
+  target:
+    - release
 
