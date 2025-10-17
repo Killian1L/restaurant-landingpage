@@ -4,11 +4,9 @@ name: default
 
 steps:
   - name: build
-    image: plugins/hugo
-    settings:
-      hugo_version: 0.55
-      validate: true
-      # le plugin hugo génère par défaut dans ./public
+    image: peaceiris/hugo:v0.55.6
+    commands:
+      - hugo --gc --minify   # génère ./public
 
   - name: deploy-s3
     image: plugins/s3-sync:1
@@ -26,7 +24,8 @@ steps:
 
 trigger:
   branch:
-  - master
+    - master
   event:
-  - push
-  - custom
+    - push
+    - custom
+
