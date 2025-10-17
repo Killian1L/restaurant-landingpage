@@ -4,7 +4,6 @@ hugo_env: &hugo_env
 hugo_env_release: &hugo_env_release
   BASE_URL: http://bucket-drone-release.s3-website-us-east-1.amazonaws.com
 
----
 kind: pipeline
 type: docker
 name: default
@@ -37,7 +36,6 @@ trigger:
     - push
     - custom
 
----
 kind: pipeline
 type: docker
 name: release
@@ -68,4 +66,5 @@ trigger:
     - promote
   target:
     - release
+
 
